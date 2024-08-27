@@ -1,6 +1,7 @@
 const { promises } = require("supertest/lib/test");
 const db = require("../db/connection");
-const fs = require("fs/promises")
+const fs = require("fs/promises");
+const articles = require("../db/data/test-data/articles");
 
 
 const selectTopics = () => {
@@ -17,6 +18,23 @@ const selectApi = () => {
         return endpoints
         })    
     }
+
+const selectArticles = () => {
+    return db.query("SELECT * FROM articles")
+    .then(({rows})=> {
+     if (rows.length === 0) return Promise.reject({msg: "Not found"})
+            return rows;
+    })
+}
+
+selectArticlesById = (article_id) => {
+    return db
+      .query('SELECT * FROM articles WHERE article_id = $1;', [article_id])
+      .then((result) => {
+        if (result.rows.length === 0) return Promise.reject({msg: "Not found"});
+        return result.rows[0];
+      });
+  };
  
 
-module.exports =  { selectTopics, selectApi } 
+module.exports =  { selectTopics, selectApi, selectArticles, selectArticlesById} 

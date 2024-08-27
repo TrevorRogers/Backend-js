@@ -1,13 +1,15 @@
 const express = require("express");
-const {healthCheck, getTopics, getApi} = require("./controller/controller");
+const {getTopics, getApi, getArticles, getArticlesById} = require("./controller/controller");
 const app = express()
 const fs = require('fs/promises')
 
-app.get("/api/healthCheck", healthCheck);
+
 app.get("/api/topics", getTopics);
 app.get("/api", getApi)
+app.get("/api/articles", getArticles)
+app.get("/api/articles/:article_id", getArticlesById)
 
-app.use(express.json())
+// app.use(express.json())
 
 app.use((err, req, res, next) => {
     if (err.code === "22P02") {
@@ -18,7 +20,7 @@ app.use((err, req, res, next) => {
 })
 
 app.use((err, req, res, next)=> {
-    if (err.message === "Not found") {
+    if (err.msg === "Not found") {
         res.status(404).send(err)
     } else {
         next(err)
