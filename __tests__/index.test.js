@@ -18,7 +18,7 @@ describe("nc news", () => {
                 .get("/api/topics")
                 .expect(200)
                 .then(({body})=> {
-                    expect(body.topics.length >= 1).toBe(true)
+                    expect(body.topics.length === 3).toBe(true)
                     body.topics.forEach((topic) => {
                         expect(topic).toMatchObject({
                             description: expect.any(String), slug: expect.any(String)
