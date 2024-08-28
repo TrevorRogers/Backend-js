@@ -32,14 +32,6 @@ const selectArticles = () => {
     })
 }
 
-// const selectArticles = () => {
-//     return db.query("SELECT * FROM articles ORDER BY created_at DESC")
-//     .then(({rows})=> {
-//      if (rows.length === 0) return Promise.reject({msg: "Not found"})
-//             return rows;
-//     })
-// }
-
 selectArticlesById = (article_id) => {
     return db
       .query('SELECT * FROM articles WHERE article_id = $1;', [article_id])
@@ -48,6 +40,15 @@ selectArticlesById = (article_id) => {
         return result.rows[0];
       });
   };
+
+  selectCommentsByArticleId = (article_id) => {
+    return db
+      .query('SELECT * FROM comments WHERE comments.article_id = $1 ORDER BY created_at DESC;', [article_id])
+      .then((result) => {
+        if (result.rows.length === 0) return Promise.reject({msg: "Not found"});
+        return result.rows;
+      });
+  };
  
 
-module.exports =  { selectTopics, selectApi, selectArticles, selectArticlesById} 
+module.exports =  { selectTopics, selectApi, selectArticles, selectArticlesById, selectCommentsByArticleId} 

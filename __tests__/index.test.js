@@ -83,11 +83,54 @@ describe("nc news", () => {
                   expect(body.articles).toBeSortedBy("created_at", { descending: true})
                   body.articles.forEach((article) => {
                     expect(article).toMatchObject({
-                        article_id: expect.any(Number), title: expect.any(String), topic: expect.any(String), author: expect.any(String),
-                        created_at: expect.any(String), votes: expect.any(Number), article_img_url: expect.any(String), comment_count: expect.any(String)//number?
+                        article_id: expect.any(Number), 
+                        title: expect.any(String), 
+                        topic: expect.any(String), 
+                        author: expect.any(String),
+                        created_at: expect.any(String), 
+                        votes: expect.any(Number), 
+                        article_img_url: expect.any(String), 
+                        comment_count: expect.any(String)
                     })
                 })          
             })
         })
+    })
+    describe("/api/articles/:article_id/comments", ()=> {
+        test("200: serves an array of comments for the given article_id sorted by date in desc order", () => {
+            return request(app)
+                .get("/api/articles/1/comments")
+                .expect(200)
+                .then(({body}) => {
+                  expect(body.comments.length).toBe(11)
+                  expect(body.comments).toBeSortedBy("created_at", { descending: true})
+                  body.comments.forEach((comment) => {
+                    expect(comment.article_id).toBe(1)
+                    expect(comment).toMatchObject({
+                        body: expect.any(String), 
+                        author: expect.any(String),
+                        created_at: expect.any(String), 
+                        votes: expect.any(Number), 
+                        comment_id: expect.any(Number)
+                    })
+                })          
+            })
+        })
+        test('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
+            return request(app)
+              .get('/api/articles/999/comments')
+              .expect(404)
+              .then((response) => {
+                expect(response.body.msg).toBe('Not found');
+              });
+          });
+          test('GET:400 responds with an appropriate error message when given an invalid id', () => {
+            return request(app)
+              .get('/api/articles/not-an-id/comments')
+              .expect(400)
+              .then((response) => {
+                expect(response.body.msg).toBe('Invalid request');
+              });
+          });
     })
 })
