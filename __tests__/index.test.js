@@ -130,7 +130,7 @@ describe("nc news", () => {
               .expect(400)
               .then((response) => {
                 expect(response.body.msg).toBe('Invalid request');
-              });
-          });
+            });
+        });
     })
 })
