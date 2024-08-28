@@ -3,6 +3,7 @@ const app = require("../app");
 const db = require("../db/connection");
 const seed = require ("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
+const toBeSortedBy = require("jest-sorted")
 
 beforeEach(()=> {
     return seed(testData)
@@ -39,38 +40,6 @@ describe("nc news", () => {
                 })
             })
         })
-        describe("/api/articles", ()=> {
-            test("200: serves an array of all articles", () => {
-                return request(app)
-                    .get("/api/articles")
-                    .expect(200)
-                    .then(({body}) => {
-                      expect(body.articles.length >= 1).toBe(true)
-                      body.articles.forEach((article) => {
-                        expect(article).toMatchObject({
-                            article_id: expect.any(Number), title: expect.any(String), topic: expect.any(String), author: expect.any(String),
-                            body: expect.any(String), created_at: expect.any(String), votes: expect.any(Number), article_img_url: expect.any(String)
-                    })
-                })          
-            })
-        })
-    })
-     describe("/api/articles", ()=> {
-            test("200: serves an array of all articles", () => {
-                return request(app)
-                    .get("/api/articles")
-                    .expect(200)
-                    .then(({body}) => {
-                      expect(body.articles.length >= 1).toBe(true)
-                      body.articles.forEach((article) => {
-                        expect(article).toMatchObject({
-                            article_id: expect.any(Number), title: expect.any(String), topic: expect.any(String), author: expect.any(String),
-                            body: expect.any(String), created_at: expect.any(String), votes: expect.any(Number), article_img_url: expect.any(String)
-                    })
-                })          
-            })
-        })
-    })
     describe("/api/articles/:articles_id", ()=> {
         test("200: sends a single article to the client based by ID", () => {
             return request(app)
@@ -101,7 +70,24 @@ describe("nc news", () => {
               .expect(400)
               .then((response) => {
                 expect(response.body.msg).toBe('Invalid request');
-              });
-          });
+            });
+        });
     })
- })
+    describe("/api/articles", ()=> {
+        test("200: serves an array of all articles sorted by date in desc order", () => {
+            return request(app)
+                .get("/api/articles")
+                .expect(200)
+                .then(({body}) => {
+                  expect(body.articles.length >= 1).toBe(true)
+                  expect(body.articles).toBeSortedBy("created_at", { descending: true})
+                  body.articles.forEach((article) => {
+                    expect(article).toMatchObject({
+                        article_id: expect.any(Number), title: expect.any(String), topic: expect.any(String), author: expect.any(String),
+                        created_at: expect.any(String), votes: expect.any(Number), article_img_url: expect.any(String), comment_count: expect.any(String)//number?
+                    })
+                })          
+            })
+        })
+    })
+})

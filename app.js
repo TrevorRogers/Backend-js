@@ -19,12 +19,26 @@ app.use((err, req, res, next) => {
     }
 })
 
+// app.use((err, req, res, next)=> {
+//     console.log(err)
+//     if (err.code === "23502") {
+//       res.status(400).send({msg: "Invalid request"})
+//     } else {
+//      next(err);
+//     }
+//   })
+
 app.use((err, req, res, next)=> {
     if (err.msg === "Not found") {
         res.status(404).send(err)
     } else {
         next(err)
     }
+})
+
+app.use((err, req, res, next)=> {
+    console.log(err)
+    res.status(400).send({msg: "Invalid request"})
 })
 
 
