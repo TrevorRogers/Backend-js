@@ -12,17 +12,21 @@ const getTopics = (request, response) => {
   const getApi = (request, response) => {
     selectApi().then((endpoint) => {
         response.status(200).send({endpoint});
+    }).catch((err)=>{
+        next(err)
     })
   };
 
   const getArticles = (request, response) => {
     selectArticles().then((articles)=> {
         response.status(200).send({articles})
+    }).catch((err)=>{
+        console.log(err, "error in controller")
+        next(err)
     })
   }
 
   getArticlesById = (req, res, next) => {
-    console.log("in controller")
     const { article_id } = req.params;
     selectArticlesById(article_id).then((article) => {
       res.status(200).send({ article });
