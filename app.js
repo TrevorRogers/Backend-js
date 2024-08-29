@@ -1,16 +1,20 @@
 const express = require("express");
-const {getTopics, getApi, getArticles, getArticlesById, getComments} = require("./controller/controller");
+const {getTopics, getApi, getArticles, getArticlesById, getComments, postComments, deleteCommentById, getUsers} = require("./controller/controller");
 const app = express()
 const fs = require('fs/promises')
 
+app.use(express.json())
 
 app.get("/api/topics", getTopics);
 app.get("/api", getApi)
 app.get("/api/articles", getArticles)
 app.get("/api/articles/:article_id", getArticlesById)
 app.get("/api/articles/:article_id/comments", getComments)
+app.get("/api/users", getUsers)
 
-// app.use(express.json())
+app.post("/api/articles/:article_id/comments", postComments)
+
+app.delete("/api/comments/:comment_id", deleteCommentById)
 
 app.use((err, req, res, next) => {
     if (err.code === "22P02") {
@@ -26,6 +30,10 @@ app.use((err, req, res, next)=> {
     } else {
         next(err)
     }
+})
+
+app.use((err, req, res, next) => {
+    console.log(err)
 })
 
 app.use((err, req, res, next)=> {
