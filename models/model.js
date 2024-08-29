@@ -19,14 +19,51 @@ const selectApi = () => {
         })    
     }
 
-const selectArticles = () => {
-    return db.query(
-        `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url,
+// const selectArticles = () => {
+//     return db.query(
+//         `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url,
+//         COUNT(comments.comment_id) AS comment_count FROM articles
+//         LEFT JOIN comments ON articles.article_id = comments.article_id
+//         GROUP BY articles.article_id
+//         ORDER BY created_at DESC;`)
+//     .then(({rows})=> {
+//      if (rows.length === 0) return Promise.reject({msg: "Not found"})
+//             return rows;
+//     })
+// }
+
+const selectArticles = (sort_by) => {
+    console.log(sort_by)
+    let queryStr = `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, articles.article_img_url,
         COUNT(comments.comment_id) AS comment_count FROM articles
         LEFT JOIN comments ON articles.article_id = comments.article_id
-        GROUP BY articles.article_id
-        ORDER BY created_at DESC;`)
-    .then(({rows})=> {
+        GROUP BY articles.article_id`
+    const queryVals = [];
+    const validColumns = [
+        "title",
+        "topic",
+        "author",
+        "created_at",
+        "votes",
+        "comment_count"
+    ];
+
+    if (sort_by) {
+        if (!validColumns.includes(sort_by)) {
+            console.log("hereeee")
+            return Promise.reject({msg: "Invalid request"});
+        } else {
+            queryStr += ` ORDER BY ${sort_by} DESC`;
+        }
+    } 
+    if (!sort_by) {
+        console.log("here")
+        queryStr += ` ORDER BY created_at DESC`
+        console.log(queryStr, "<<<< str")
+    }
+
+    return db.query(queryStr).then(({rows})=> {
+        console.log(queryStr)
      if (rows.length === 0) return Promise.reject({msg: "Not found"})
             return rows;
     })
@@ -50,16 +87,15 @@ selectArticlesById = (article_id) => {
       });
   };
 
-  insertComment = ({ username, body }) => {
-    console.log("in model")
+  insertComment = (article_id, username, body) => {
     return db
-        .query(`INSERT INTO comments(username, body) 
-            VALUES ($1, $2) RETURNING *`,[username, body])
+        .query(`INSERT INTO comments(article_id, author, body)
+            VALUES ($1, $2, $3) RETURNING *`,[article_id, username, body])
         .then((result) => {
-            console.log(result.rows)
+            if(result.rowCount === 0) return Promise.reject({msg: "Not found"})
             return result.rows[0]
         }).catch((err)=> {
-            console.log(err)
+            return Promise.reject({msg: "Invalid request"})
         })
   }
 

@@ -32,8 +32,16 @@ app.use((err, req, res, next)=> {
     }
 })
 
+app.use((err, req, res, next)=> {
+    if (err.msg === "Invalid request") {
+        res.status(400).send(err)
+    } else {
+        next(err)
+    }
+})
+
 app.use((err, req, res, next) => {
-    console.log(err)
+    console.log(err, "errroororr")
 })
 
 app.use((err, req, res, next)=> {
