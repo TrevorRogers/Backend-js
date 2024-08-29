@@ -132,31 +132,29 @@ describe("nc news", () => {
                 expect(response.body.msg).toBe('Invalid request');
             });
         });
-    //     test('POST:201 inserts a new team to the db and sends the new team back to the client', () => {
-    //         const newComment = {
-    //           username: 'MyUsername',
-    //           body: "Insert body here"
-    //         };
-    //         return request(app)
-    //           .post('/api/articles/1/comments')
-    //           .send(newComment)
-    //           .expect(201)
-    //           .then(({body}) => {
-    //             console.log(body)
-    //             expect(body.comments.comment_id).toBe(12);
-    //             expect(body.comments.username).toBe('MyUsername');
-    //             expect(body.comments.body).toBe('Insert body here');
-    //           });
-    //       });
-    //       test('POST:400 responds with an appropriate status and error message when provided with no username or body', () => {
-    //         return request(app)
-    //           .post('/api/articles/1/comments')
-    //           .send({  })
-    //           .expect(400)
-    //           .then((response) => {
-    //             expect(response.body.msg).toBe('Invalid request');
-    //           });
-    //       });
+        test('POST:201 inserts a new team to the db and sends the new team back to the client', () => {
+            const newComment = {
+              username: 'butter_bridge',
+              body: "Insert body here"
+            };
+            return request(app)
+              .post('/api/articles/1/comments')
+              .send(newComment)
+              .expect(201)
+              .then(({body}) => {
+                expect(body.comment.author).toBe('butter_bridge');
+                expect(body.comment.body).toBe('Insert body here');
+              });
+          });
+          test('POST:400 responds with an appropriate status and error message when provided with no username or body', () => {
+            return request(app)
+              .post('/api/articles/1/comments')
+              .send({  })
+              .expect(400)
+              .then((response) => {
+                expect(response.body.msg).toBe('Invalid request');
+              });
+          });
     })
     describe("/api/comments/:comment_id", () => {
         test('DELETE:204 deletes the given comment by comment_id', () => {
@@ -180,12 +178,11 @@ describe("nc news", () => {
           });
     })
     describe("/api/users", () => {
-        test("200: sends an array of objects, each of which should have the following properties: username, name, avatar_url", () => {
+        test("200: sends an array of users with all of its properties", () => {
             return request(app)
                 .get("/api/users")
                 .expect(200)
                 .then(({body})=> {
-                    console.log(body)
                     expect(body.user.length === 4).toBe(true)
                     body.user.forEach((users) => {
                         expect(users).toMatchObject({
@@ -195,6 +192,32 @@ describe("nc news", () => {
                         })
                     })
                 })
+        })
+    })
+    describe("GET /api/articles?sort_by=", () => {
+        test("200: accepts a sort_by query, and order the response by the given column name ascending", () => {
+            return request(app)
+                .get("/api/articles?sort_by=topic")
+                .expect(200)
+                .then(({body}) => {
+                    expect(body.articles).toBeSortedBy("topic", {descending: true})
+            })
+        })
+        test("200: accepts a sort_by query, and order the response by the given column name ascending", () => {
+            return request(app)
+                .get("/api/articles?sort_by=title")
+                .expect(200)
+                .then(({body}) => {
+                    expect(body.articles).toBeSortedBy("title", {descending: true})
+            })
+        })
+        test("400: reject if sort_by value is not valid", () => {
+            return request(app)
+                .get("/api/articles?sort_by=not-a-sortby")
+                .expect(400)
+                .then(({body}) => {
+                    expect(body.msg).toBe("Invalid request")
+            })
         })
     })
 })

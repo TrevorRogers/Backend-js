@@ -46,7 +46,7 @@
     "description": "sends an array of comments for the given article_id",
     "queries": ["author"],
     "exampleResponse": {
-      "articles": [
+      "comments": [
         {
           "comment_id": 1,
           "author": "butter_bridge",
@@ -62,7 +62,7 @@
     "description": "sends an array of all users",
     "queries": [],
     "exampleResponse": {
-      "articles": [
+      "users": [
         {
           "username": "butter_bridge",
           "name": "jonny",
@@ -70,5 +70,9 @@
         }
       ]
     }
+  },
+  "GET /api/comments/:comment_id": {
+    "description": "deletes a comment based by comment_id inserted",
+    "queries": []
   }
 }

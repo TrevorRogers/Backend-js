@@ -18,7 +18,8 @@ const getTopics = (request, response) => {
   };
 
   const getArticles = (request, response, next) => {
-    selectArticles().then((articles)=> {
+    const { sort_by } = request.query
+    selectArticles(sort_by).then((articles)=> {
         response.status(200).send({articles})
     }).catch((err)=>{
         next(err)
@@ -43,12 +44,11 @@ const getTopics = (request, response) => {
   }
 
   const postComments = (req, res, next) => {
-    const newComment = req.body;
-    console.log(newComment, "<<<< new comment")
-    insertComment(newComment).then((comment) => {
-        console.log(comment, "<<<<<<<<<<")
+    const {username, body} = req.body;
+    const { article_id } = req.params;
+    insertComment(article_id, username, body).then((comment) => {
         res.status(201).send({comment})
-    })
+    }).catch(next)
   }
 
   const deleteCommentById = (req, res, next) => {
