@@ -132,5 +132,69 @@ describe("nc news", () => {
                 expect(response.body.msg).toBe('Invalid request');
             });
         });
+    //     test('POST:201 inserts a new team to the db and sends the new team back to the client', () => {
+    //         const newComment = {
+    //           username: 'MyUsername',
+    //           body: "Insert body here"
+    //         };
+    //         return request(app)
+    //           .post('/api/articles/1/comments')
+    //           .send(newComment)
+    //           .expect(201)
+    //           .then(({body}) => {
+    //             console.log(body)
+    //             expect(body.comments.comment_id).toBe(12);
+    //             expect(body.comments.username).toBe('MyUsername');
+    //             expect(body.comments.body).toBe('Insert body here');
+    //           });
+    //       });
+    //       test('POST:400 responds with an appropriate status and error message when provided with no username or body', () => {
+    //         return request(app)
+    //           .post('/api/articles/1/comments')
+    //           .send({  })
+    //           .expect(400)
+    //           .then((response) => {
+    //             expect(response.body.msg).toBe('Invalid request');
+    //           });
+    //       });
+    })
+    describe("/api/comments/:comment_id", () => {
+        test('DELETE:204 deletes the given comment by comment_id', () => {
+            return request(app).delete('/api/comments/1').expect(204);
+          });
+          test('DELETE:404 responds with an appropriate status and error message when given a non-existent id', () => {
+            return request(app)
+              .delete('/api/comments/999')
+              .expect(404)
+              .then((response) => {
+                expect(response.body.msg).toBe('Not found');
+              });
+          });
+          test('DELETE:400 responds with an appropriate status and error message when given an invalid id', () => {
+            return request(app)
+              .delete('/api/comments/not-a-comment')
+              .expect(400)
+              .then((response) => {
+                expect(response.body.msg).toBe('Invalid request');
+              });
+          });
+    })
+    describe("/api/users", () => {
+        test("200: sends an array of objects, each of which should have the following properties: username, name, avatar_url", () => {
+            return request(app)
+                .get("/api/users")
+                .expect(200)
+                .then(({body})=> {
+                    console.log(body)
+                    expect(body.user.length === 4).toBe(true)
+                    body.user.forEach((users) => {
+                        expect(users).toMatchObject({
+                            username: expect.any(String), 
+                            name: expect.any(String),
+                            avatar_url: expect.any(String)
+                        })
+                    })
+                })
+        })
     })
 })
