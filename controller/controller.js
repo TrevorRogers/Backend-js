@@ -1,5 +1,5 @@
 const articles = require("../db/data/test-data/articles");
-const { selectTopics, selectApi, selectArticles, selectArticlesById, selectCommentsByArticleId, insertComment, removeCommentById, selectUsers} = require("../models/model");
+const { selectTopics, selectApi, selectArticles, selectArticlesById, selectCommentsByArticleId, insertComment, removeCommentById, selectUsers, updateArticlesById} = require("../models/model");
 
 
 
@@ -18,8 +18,8 @@ const getTopics = (request, response) => {
   };
 
   const getArticles = (request, response, next) => {
-    const { sort_by } = request.query
-    selectArticles(sort_by).then((articles)=> {
+    const { sort_by, topic } = request.query
+    selectArticles(sort_by, topic).then((articles)=> {
         response.status(200).send({articles})
     }).catch((err)=>{
         next(err)
@@ -64,7 +64,15 @@ const getTopics = (request, response) => {
     })
   }
 
+  const patchArticles = (req, res, next) => {
+    const {article_id} = req.params;
+    const {inc_votes} = req.body
+    updateArticlesById(article_id, inc_votes).then((updatedArticle)=> {
+        res.status(200).send({updatedArticle})
+    })
+  }
 
 
 
-  module.exports =  {getTopics, getApi, getArticles, getArticlesById, getComments, postComments, deleteCommentById, getUsers} 
+
+  module.exports =  {getTopics, getApi, getArticles, getArticlesById, getComments, postComments, deleteCommentById, getUsers, patchArticles} 

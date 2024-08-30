@@ -53,7 +53,8 @@ describe("nc news", () => {
                   expect(body.article.body).toBe('I find this existence challenging'); 
                   expect(body.article.created_at).toBe('2020-07-09T20:11:00.000Z');
                   expect(body.article.votes).toBe(100);   
-                  expect(body.article.article_img_url).toBe('https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700');     
+                  expect(body.article.article_img_url).toBe('https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700');  
+                  expect(body.article.comment_count).toBe('11')   
             })
         })
         test('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
@@ -203,7 +204,7 @@ describe("nc news", () => {
                     expect(body.articles).toBeSortedBy("topic", {descending: true})
             })
         })
-        test("200: accepts a sort_by query, and order the response by the given column name ascending", () => {
+        test("200: accepts a sort_by query, and order the response by the given column name descending", () => {
             return request(app)
                 .get("/api/articles?sort_by=title")
                 .expect(200)
@@ -219,5 +220,49 @@ describe("nc news", () => {
                     expect(body.msg).toBe("Invalid request")
             })
         })
+    })
+    describe("GET /api/articles?topic=", () => {
+        test("200: accepts a topic query, and order the response by the given topic name descending", () => {
+            return request(app)
+                .get("/api/articles?topic=cats")
+                .expect(200)
+                .then(({body}) => {
+                    expect(body.articles).toBeSortedBy("cats", {descending: true})
+            })
+        })
+        test("400: reject if topic value is not valid", () => {
+            return request(app)
+                .get("/api/articles?topic=not-a-topic")
+                .expect(400)
+                .then(({body}) => {
+                    expect(body.msg).toBe("Invalid request")
+            })
+        })
+    })
+    describe("PATCH /api/articles/:article_id", () => {
+        test('PATCH:200 adds or subtracts from the current articles vote property ', () => {
+            const newVotes = {
+              inc_votes: 1
+            };
+            return request(app)
+              .patch('/api/articles/1')
+              .send(newVotes)
+              .expect(200)
+              .then(({body}) => {
+                expect(body.updatedArticle.votes).toBe(101);
+              });
+          });
+          test('PATCH:200 adds or subtracts from the current articles vote property ', () => {
+            const newVotes = {
+              inc_votes: -1
+            };
+            return request(app)
+              .patch('/api/articles/1')
+              .send(newVotes)
+              .expect(200)
+              .then(({body}) => {
+                expect(body.updatedArticle.votes).toBe(99);
+            });
+        });
     })
 })
