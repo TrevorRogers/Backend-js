@@ -1,5 +1,5 @@
 const articles = require("../db/data/test-data/articles");
-const { selectTopics, selectApi, selectArticles, selectArticlesById, selectCommentsByArticleId, insertComment, removeCommentById, selectUsers, updateArticlesById} = require("../models/model");
+const { selectTopics, selectApi, selectArticles, selectArticlesById, selectCommentsByArticleId, insertComment, removeCommentById, selectUsers, updateArticlesById, selectUsersByUsername, insertArticle, insertTopic} = require("../models/model");
 
 
 
@@ -72,7 +72,32 @@ const getTopics = (request, response) => {
     })
   }
 
+  const getUsersByUsername = (req, res, next) => {
+    const { username } = req.params;
+    selectUsersByUsername(username).then((user) => {
+      res.status(200).send({ user });
+    }).catch(next);
+  };
+
+  const postArticle = ( req, res, next) => {
+    console.log("here")
+    const {author, title, body, topic, article_img_url} = req.body;
+    console.log(author, title, body, topic, article_img_url)
+    insertArticle(author, title, body, topic, article_img_url).then((article) => {
+        res.status(201).send({article})
+    }).catch(next)
+  }
+
+  const postTopics = ( req, res, next) => {
+    console.log("here")
+    const {slug, description} = req.body;
+    console.log(slug, description)
+    insertTopic(slug, description).then((topic) => {
+        res.status(201).send({topic})
+    }).catch(next)
+  }
 
 
 
-  module.exports =  {getTopics, getApi, getArticles, getArticlesById, getComments, postComments, deleteCommentById, getUsers, patchArticles} 
+
+  module.exports =  {getTopics, getApi, getArticles, getArticlesById, getComments, postComments, deleteCommentById, getUsers, patchArticles, getUsersByUsername, postArticle, postTopics} 

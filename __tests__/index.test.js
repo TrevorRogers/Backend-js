@@ -23,10 +23,33 @@ describe("nc news", () => {
                     body.topics.forEach((topic) => {
                         expect(topic).toMatchObject({
                             description: expect.any(String), slug: expect.any(String)
-                        })
                     })
                 })
+            })
         })
+        test('POST:201 inserts a new topic to the db and sends the new topic back to the client', () => {
+            const newTopic = {
+              slug: "backend",
+              description: "Project",
+            };
+            return request(app)
+              .post('/api/topics')
+              .send(newTopic)
+              .expect(201)
+              .then(({body}) => {
+                expect(body.topic.slug).toBe('backend');
+                expect(body.topic.description).toBe('Project');
+              });
+          });
+          test('POST:400 responds with an appropriate status and error message when provided with no username or body', () => {
+            return request(app)
+              .post('/api/articles')
+              .send({  })
+              .expect(400)
+              .then((response) => {
+                expect(response.body.msg).toBe('Invalid request');
+              });
+          });
     })
      describe("/api", ()=> {
         test("200: serves up a json representation of all the available endpoints of the api", () => {
@@ -96,6 +119,32 @@ describe("nc news", () => {
                 })          
             })
         })
+        test.skip('POST:201 inserts a new team to the db and sends the new team back to the client', () => {
+            const newPost = {
+              author: "Trevor",
+              title: "Project",
+              body: "Insert body here",
+              topic: "backend",
+              article_img_url: "img_url"
+            };
+            return request(app)
+              .post('/api/articles')
+              .send(newPost)
+              .expect(201)
+              .then(({body}) => {
+                expect(body.comment.author).toBe('butter_bridge');
+                expect(body.comment.body).toBe('Insert body here');
+              });
+          });
+          test('POST:400 responds with an appropriate status and error message when provided with no username or body', () => {
+            return request(app)
+              .post('/api/articles')
+              .send({  })
+              .expect(400)
+              .then((response) => {
+                expect(response.body.msg).toBe('Invalid request');
+              });
+          });
     })
     describe("/api/articles/:article_id/comments", ()=> {
         test("200: serves an array of comments for the given article_id sorted by date in desc order", () => {
@@ -265,4 +314,26 @@ describe("nc news", () => {
             });
         });
     })
+    describe("/api/users/:username", ()=> {
+        test("200: sends a single user based by username", () => {
+            return request(app)
+                .get("/api/users/butter_bridge")
+                .expect(200)
+                .then(({body}) => {
+                    console.log(body)
+                  expect(body.user.username).toBe('butter_bridge');
+                  expect(body.user.avatar_url).toBe('https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg');
+                  expect(body.user.name).toBe('jonny');  
+            })
+        })
+        test('GET:404 sends an appropriate status and error message when given a valid but non-existent id', () => {
+            return request(app)
+              .get('/api/users/999')
+              .expect(404)
+              .then((response) => {
+                expect(response.body.msg).toBe('Not found');
+            });
+        });
+    })
+    
 })
