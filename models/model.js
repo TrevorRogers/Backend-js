@@ -133,6 +133,48 @@ selectArticlesById = (article_id) => {
                 return rows[0];
         })
     }
+
+    selectUsersByUsername = (username) => {
+        return db
+          .query(`SELECT * FROM users
+            WHERE username = $1`, [username])
+          .then((result) => {
+            if (result.rows.length === 0) return Promise.reject({msg: "Not found"});
+            return result.rows[0];
+          });
+      };
+
+      insertArticle = (author, title, body, topic, article_img_url) => {
+        console.log("model")
+        return db
+            .query(`INSERT INTO articles (author, title, body, topic, article_img_url)
+                VALUES ($1, $2, $3, $4, $5) RETURNING *`,[author, title, body, topic, article_img_url])
+            .then((result) => {
+                console.log(result.rows)
+                if(result.rowCount === 0) return Promise.reject({msg: "Not found"})
+                return result.rows[0]
+            }).catch((err)=> {
+                console.log(err)
+                return Promise.reject({msg: "Invalid request"})
+            })
+      }
+
+      insertTopic = (slug, description) => {
+        console.log("model")
+        return db
+            .query(`INSERT INTO topics (slug, description)
+                VALUES ($1, $2) RETURNING *`,[slug, description])
+            .then((result) => {
+                console.log(result.rows)
+                if(result.rowCount === 0) return Promise.reject({msg: "Not found"})
+                return result.rows[0]
+            }).catch((err)=> {
+                console.log(err)
+                return Promise.reject({msg: "Invalid request"})
+            })
+      }
+
+
  
 
-module.exports =  { selectTopics, selectApi, selectArticles, selectArticlesById, selectCommentsByArticleId, insertComment, removeCommentById, selectUsers, updateArticlesById} 
+module.exports =  { selectTopics, selectApi, selectArticles, selectArticlesById, selectCommentsByArticleId, insertComment, removeCommentById, selectUsers, updateArticlesById, selectUsersByUsername, insertArticle, insertTopic} 
