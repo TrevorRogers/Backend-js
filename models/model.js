@@ -131,6 +131,7 @@ selectArticlesById = (article_id) => {
         return db.query(queryStr, queryVals).then(({rows}) => {
             if (rows.length === 0) return Promise.reject({msg: "Not found"})
                 return rows[0];
+            
         })
     }
 
@@ -174,7 +175,7 @@ selectArticlesById = (article_id) => {
             })
       }
 
-
  
 
 module.exports =  { selectTopics, selectApi, selectArticles, selectArticlesById, selectCommentsByArticleId, insertComment, removeCommentById, selectUsers, updateArticlesById, selectUsersByUsername, insertArticle, insertTopic} 
+
