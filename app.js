@@ -2,15 +2,13 @@ const express = require("express");
 const {getTopics, getApi, getArticles, getArticlesById, getComments, postComments, deleteCommentById, getUsers, patchArticles, getUsersByUsername, postArticle, postTopics} = require("./controller/controller");
 const app = express()
 const fs = require('fs/promises')
-const apiRouter = require("express").Router();
+
 const cors = require('cors');
 
-// apiRouter.get("/", (req, res) => {
-//     console.log("here")
-//     res.status(200).send("All ok from /api")
-// })
 
 app.use(cors())
+
+
 app.use(express.json())
 
 app.get("/api/topics", getTopics);
