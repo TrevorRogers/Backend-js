@@ -27,7 +27,6 @@ app.delete("/api/comments/:comment_id", deleteCommentById)
 
 app.patch("/api/articles/:article_id", patchArticles)
 
-// app.use("/api", apiRouter)
 
 app.use((err, req, res, next) => {
     if (err.code === "22P02") {

@@ -28,7 +28,10 @@ const selectArticles = (sort_by, topic) => {
     const queryVals = [];
     const validTopics = [
         "mitch",
-        "cats"
+        "cats",
+        "football",
+        "cooking",
+        "coding"
     ]
     const validColumns = [
         "title",
